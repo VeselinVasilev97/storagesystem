@@ -56,18 +56,22 @@ jobs:
         run: |
           JWT=$(curl -s -X POST -H "Content-Type: application/json" -d '{"username": "'$PORTAINER_USERNAME'", "password": "'$PORTAINER_PASSWORD'"}' $PORTAINER_URL/api/auth | jq -r .jwt)
           echo "JWT: $JWT"
-          # Remove existing container
+          # Remove existing container if it exists
           EXISTING_CONTAINER=$(curl -s -X GET "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/containers/json?all=true" -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" | jq -r '.[] | select(.Names[] | contains("storageSystemContainer")) | .Id')
           if [ -n "$EXISTING_CONTAINER" ]; then
             echo "Removing existing container: $EXISTING_CONTAINER"
             curl -s -X POST "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/containers/$EXISTING_CONTAINER/stop" -H "Authorization: Bearer $JWT" -H "Content-Type: application/json"
-            curl -s -X DELETE "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/containers/$EXISTING_CONTAINER" -H "Authorization: Bearer $JWT" -H "Content-Type: application/json?force=true"
+            curl -s -X DELETE "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/containers/$EXISTING_CONTAINER?force=true" -H "Authorization: Bearer $JWT" -H "Content-Type: application/json"
+          else
+            echo "No existing container found with name: storageSystemContainer"
           fi
-          # Remove existing image
+          # Remove existing image if it exists
           EXISTING_IMAGE=$(curl -s -X GET "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/images/json" -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" | jq -r '.[] | select(.RepoTags[] | contains("storageSystemImage:latest")) | .Id')
           if [ -n "$EXISTING_IMAGE" ]; then
             echo "Removing existing image: $EXISTING_IMAGE"
             curl -s -X DELETE "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/images/$EXISTING_IMAGE?force=true" -H "Authorization: Bearer $JWT" -H "Content-Type: application/json"
+          else
+            echo "No existing image found with name: storageSystemImage:latest"
           fi
 
       - name: Deploy to Portainer
