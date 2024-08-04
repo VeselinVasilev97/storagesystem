@@ -1,0 +1,41 @@
+name: My Workflow
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build
+        run: go build -o myapp
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+      - name: Test
+        run: go test ./...
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build and push Docker image
+      run: |
+        docker build -t my-image:latest .
+        docker push my-image:latest
+    - name: Deploy to server
+      uses: actions/ssh@v1
+      with:
+        host: your_server_ip
+        username: your_username
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          docker pull my-image:latest
+          docker stop my-app
+          docker run -d --name my-app -p 8080:8080 my-image:latest
