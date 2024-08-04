@@ -18,7 +18,7 @@ func main() {
 	r.Use(middleware.LoggingMiddleware)
 
 	r.GET("/version", func(c *gin.Context) {
-		c.String(http.StatusOK, "This is the version 1.1 of the backend app")
+		c.String(http.StatusOK, "This is the version 1.2 of the backend app")
 	})
 
 	apiGroup := r.Group("/api")
