@@ -13,6 +13,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Print secrets lengths
+        run: |
+          echo "DOCKER_USERNAME length: ${#DOCKER_USERNAME}"
+          echo "DOCKER_PASSWORD length: ${#DOCKER_PASSWORD}"
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -42,4 +50,10 @@ jobs:
           curl -X POST "$PORTAINER_URL/api/endpoints/1/docker/containers/create" -H "Authorization: Bearer $JWT" -d '{
             "Image": "'${{ secrets.DOCKER_USERNAME }}/your-image-name:latest'",
             "name": "your-go-app",
-            "HostConfig":
+            "HostConfig": {
+              "PortBindings": {
+                "80/tcp": [{"HostPort": "80"}]
+              }
+            }
+          }'
+          curl -X POST "$PORTAINER_URL/api/endpoints/1/docker/containers/your-go-app/start" -H "Authorization: Bearer $JWT"
