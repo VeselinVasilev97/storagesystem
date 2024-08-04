@@ -61,13 +61,13 @@ jobs:
           if [ -n "$EXISTING_CONTAINER" ]; then
             echo "Removing existing container: $EXISTING_CONTAINER"
             curl -s -X POST "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/containers/$EXISTING_CONTAINER/stop" -H "Authorization: Bearer $JWT" -H "Content-Type: application/json"
-            curl -s -X DELETE "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/containers/$EXISTING_CONTAINER" -H "Authorization: Bearer $JWT" -H "Content-Type: application/json"
+            curl -s -X DELETE "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/containers/$EXISTING_CONTAINER" -H "Authorization: Bearer $JWT" -H "Content-Type: application/json?force=true"
           fi
           # Remove existing image
           EXISTING_IMAGE=$(curl -s -X GET "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/images/json" -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" | jq -r '.[] | select(.RepoTags[] | contains("storagesystem:latest")) | .Id')
           if [ -n "$EXISTING_IMAGE" ]; then
             echo "Removing existing image: $EXISTING_IMAGE"
-            curl -s -X DELETE "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/images/$EXISTING_IMAGE" -H "Authorization: Bearer $JWT" -H "Content-Type: application/json"
+            curl -s -X DELETE "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/images/$EXISTING_IMAGE?force=true" -H "Authorization: Bearer $JWT" -H "Content-Type: application/json"
           fi
 
       - name: Deploy to Portainer
