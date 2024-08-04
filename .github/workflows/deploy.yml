@@ -1,41 +1,51 @@
-name: My Workflow
+name: Build and Push Docker Image
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Build
-        run: go build -o myapp
 
-  test:
-    runs-on: ubuntu-latest
-    needs: build
     steps:
-      - uses: actions/checkout@v3
-      - name: Test
-        run: go test ./...
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build and push Docker image
-      run: |
-        docker build -t my-image:latest .
-        docker push my-image:latest
-    - name: Deploy to server
-      uses: actions/ssh@v1
-      with:
-        host: your_server_ip
-        username: your_username
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          docker pull my-image:latest
-          docker stop my-app
-          docker run -d --name my-app -p 8080:8080 my-image:latest
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/storagesystem:latest
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Deploy to Portainer
+        env:
+          PORTAINER_URL: ${{ secrets.PORTAINER_URL }}
+          PORTAINER_USERNAME: ${{ secrets.PORTAINER_USERNAME }}
+          PORTAINER_PASSWORD: ${{ secrets.PORTAINER_PASSWORD }}
+        run: |
+          JWT=$(curl -s -X POST -H "Content-Type: application/json" -d '{"username": "'$PORTAINER_USERNAME'", "password": "'$PORTAINER_PASSWORD'"}' $PORTAINER_URL/api/auth | jq -r .jwt)
+          curl -X POST "$PORTAINER_URL/api/endpoints/1/docker/images/create?fromImage=${{ secrets.DOCKER_USERNAME }}/storagesystem&tag=latest" -H "Authorization: Bearer $JWT"
+          curl -X POST "$PORTAINER_URL/api/endpoints/1/docker/containers/create" -H "Authorization: Bearer $JWT" -d '{
+            "Image": "'${{ secrets.DOCKER_USERNAME }}/storagesystem:latest'",
+            "name": "your-go-app",
+            "HostConfig": {
+              "PortBindings": {
+                "80/tcp": [{"HostPort": "80"}]
+              }
+            }
+          }'
+          curl -X POST "$PORTAINER_URL/api/endpoints/1/docker/containers/your-go-app/start" -H "Authorization: Bearer $JWT"
