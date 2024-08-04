@@ -83,9 +83,8 @@ jobs:
           JWT=$(curl -s -X POST -H "Content-Type: application/json" -d '{"username": "'$PORTAINER_USERNAME'", "password": "'$PORTAINER_PASSWORD'"}' $PORTAINER_URL/api/auth | jq -r .jwt)
           echo "JWT: $JWT"
           curl -X POST "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/images/create?fromImage=${{ secrets.DOCKER_USERNAME }}/storagesystemimage&tag=latest" -H "Authorization: Bearer $JWT" -H "Content-Type: application/json"
-          CONTAINER=$(curl -s -X POST "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/containers/create" -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" -d '{
+          CONTAINER=$(curl -s -X POST "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/containers/create?name=storagesystemcontainer" -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" -d '{
             "Image": "'${{ secrets.DOCKER_USERNAME }}/storagesystemimage:latest'",
-            "name": "storagesystemcontainer",
             "HostConfig": {
               "PortBindings": {
                 "8000/tcp": [{"HostPort": "8080"}]
