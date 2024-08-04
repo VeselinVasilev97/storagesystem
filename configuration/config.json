@@ -1,0 +1,10 @@
+{
+    "port" : "8000",
+    "database" : {
+        "user" : "postgres",
+		"password" : "Vesko_972",
+		"database_name" : "postgres",
+        "host" : "212.5.152.192", 
+		"port" : "5445"
+    }
+}

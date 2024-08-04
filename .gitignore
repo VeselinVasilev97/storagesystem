@@ -1,0 +1,13 @@
+node_modules/
+
+*.log
+logs
+
+*.out
+*.class
+
+.env
+
+.vscode/
+.idea/
+
