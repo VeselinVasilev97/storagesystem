@@ -32,6 +32,10 @@ jobs:
       - name: Install jq
         run: sudo apt-get install -y jq
 
+      - name: Check DNS Resolution
+        run: |
+          nslookup registry-1.docker.io
+
       - name: Get Portainer Endpoint ID
         env:
           PORTAINER_URL: ${{ secrets.PORTAINER_URL }}
