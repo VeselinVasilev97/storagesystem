@@ -41,7 +41,7 @@ jobs:
         run: |
           JWT=$(curl -s -X POST -H "Content-Type: application/json" -d '{"username": "'$PORTAINER_USERNAME'", "password": "'$PORTAINER_PASSWORD'"}' $PORTAINER_URL/api/auth | jq -r .jwt)
           echo "JWT: $JWT"
-          ENDPOINTS=$(curl -s -X GET -H "Authorization: Bearer $JWT" $PORTAINER_URL/api/endpoints)
+          ENDPOINTS=$(curl -s -X GET -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" $PORTAINER_URL/api/endpoints)
           echo "Endpoints: $ENDPOINTS"
           ENDPOINT_ID=$(echo $ENDPOINTS | jq -r '.[0].Id') # Assuming the first endpoint is the desired one
           echo "Endpoint ID: $ENDPOINT_ID"
@@ -56,8 +56,8 @@ jobs:
         run: |
           JWT=$(curl -s -X POST -H "Content-Type: application/json" -d '{"username": "'$PORTAINER_USERNAME'", "password": "'$PORTAINER_PASSWORD'"}' $PORTAINER_URL/api/auth | jq -r .jwt)
           echo "JWT: $JWT"
-          curl -X POST "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/images/create?fromImage=${{ secrets.DOCKER_USERNAME }}/storagesystem&tag=latest" -H "Authorization: Bearer $JWT"
-          curl -X POST "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/containers/create" -H "Authorization: Bearer $JWT" -d '{
+          curl -X POST "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/images/create?fromImage=${{ secrets.DOCKER_USERNAME }}/storagesystem&tag=latest" -H "Authorization: Bearer $JWT" -H "Content-Type: application/json"
+          CONTAINER=$(curl -s -X POST "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/containers/create" -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" -d '{
             "Image": "'${{ secrets.DOCKER_USERNAME }}/storagesystem:latest'",
             "name": "storagesystem",
             "HostConfig": {
@@ -65,5 +65,8 @@ jobs:
                 "80/tcp": [{"HostPort": "80"}]
               }
             }
-          }'
-          curl -X POST "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/containers/storagesystem/start" -H "Authorization: Bearer $JWT"
+          }')
+          echo "Container Create Response: $CONTAINER"
+          CONTAINER_ID=$(echo $CONTAINER | jq -r '.Id')
+          echo "Container ID: $CONTAINER_ID"
+          curl -X POST "$PORTAINER_URL/api/endpoints/$ENDPOINT_ID/docker/containers/$CONTAINER_ID/start" -H "Authorization: Bearer $JWT" -H "Content-Type: application/json"
