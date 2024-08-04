@@ -62,8 +62,11 @@ jobs:
             "name": "storagesystem",
             "HostConfig": {
               "PortBindings": {
-                "80/tcp": [{"HostPort": "80"}]
+                "8000/tcp": [{"HostPort": "8080"}]
               }
+            },
+            "ExposedPorts": {
+              "8000/ttcp": {}
             }
           }')
           echo "Container Create Response: $CONTAINER"
