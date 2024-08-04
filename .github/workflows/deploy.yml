@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-
+      - dev
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -27,7 +27,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/your-image-name:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/storagesystem:latest
 
       - name: Install jq
         run: sudo apt-get install -y jq
@@ -39,9 +39,9 @@ jobs:
           PORTAINER_PASSWORD: ${{ secrets.PORTAINER_PASSWORD }}
         run: |
           JWT=$(curl -s -X POST -H "Content-Type: application/json" -d '{"username": "'$PORTAINER_USERNAME'", "password": "'$PORTAINER_PASSWORD'"}' $PORTAINER_URL/api/auth | jq -r .jwt)
-          curl -X POST "$PORTAINER_URL/api/endpoints/1/docker/images/create?fromImage=${{ secrets.DOCKER_USERNAME }}/your-image-name&tag=latest" -H "Authorization: Bearer $JWT"
+          curl -X POST "$PORTAINER_URL/api/endpoints/1/docker/images/create?fromImage=${{ secrets.DOCKER_USERNAME }}/storagesystem&tag=latest" -H "Authorization: Bearer $JWT"
           curl -X POST "$PORTAINER_URL/api/endpoints/1/docker/containers/create" -H "Authorization: Bearer $JWT" -d '{
-            "Image": "'${{ secrets.DOCKER_USERNAME }}/your-image-name:latest'",
+            "Image": "'${{ secrets.DOCKER_USERNAME }}/storagesystem:latest'",
             "name": "your-go-app",
             "HostConfig": {
               "PortBindings": {
