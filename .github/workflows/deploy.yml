@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - dev
+
 jobs:
   debug-secrets:
     runs-on: ubuntu-latest
@@ -15,7 +15,7 @@ jobs:
 
       - name: Print secret lengths
         run: |
-          echo "DOCKER_USERNAME length: ${#secrets.DOCKER_USERNAME}"
+          echo "DOCKER_USERNAME length: ${#DOCKER_USERNAME}"
           echo "DOCKER_PASSWORD length: ${#DOCKER_PASSWORD}"
           echo "PORTAINER_URL length: ${#PORTAINER_URL}"
           echo "PORTAINER_USERNAME length: ${#PORTAINER_USERNAME}"
