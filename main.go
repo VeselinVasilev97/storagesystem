@@ -6,7 +6,8 @@ import (
 	"storage/configuration"
 	"storage/middleware"
 	"storage/services/categories"
-	"storage/services/product"
+	"storage/services/orders"
+	"storage/services/products"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,11 +23,11 @@ func main() {
 	})
 
 	apiGroup := r.Group("/api")
-	apiGroup.GET("/get-products", product.HandlerGetAllProducts(c))
-	apiGroup.GET("/get-product", product.HandlerGetProductById(c))
+	apiGroup.GET("/get-products", products.HandlerGetAllProducts(c))
+	apiGroup.GET("/get-product", products.HandlerGetProductById(c))
 	// apiGroup.GET("/get-product-detailed", product.HandlerGetProductByIdDetailed(c))
 	apiGroup.GET("/get-categories", categories.HandlerGetAllCategories(c))
-	// apiGroup.POST("/order", categories.HandlerCreateOrder(c))
+	apiGroup.POST("/order", orders.HandlerCreateOrder(c))
 
 	if err := r.Run(":" + c.Port); err != nil {
 		log.Fatalf("failed to start server: %v", err)
