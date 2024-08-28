@@ -72,6 +72,33 @@ func RepoCreateNewOrder(db *gorm.DB, newOrder NewOrder) (int64, error) {
 	return orderID, err
 }
 
+func RepoGetOrderById(db *gorm.DB, orderID int64) (OrderView, error) {
+	var orderView OrderView
+
+	// Query the order information
+	if err := db.Model(&Order{}).
+		Where("order_id = ?", orderID).
+		First(&orderView).Error; err != nil {
+		return OrderView{}, err
+	}
+
+	// Query the order details and join with the products
+	var products []Product
+	err := db.Table("storageuser.order_details as od").
+		Select("od.product_id as id, od.quantity").
+		Where("od.order_id = ?", orderID).
+		Scan(&products).Error
+
+	if err != nil {
+		return OrderView{}, err
+	}
+
+	// Assign products to the order view
+	orderView.Products = products
+
+	return orderView, nil
+}
+
 //func RepoCreateNewOrder(db *gorm.DB, newOrder NewOrder) (int64, error) {
 //
 //	order := Order{
