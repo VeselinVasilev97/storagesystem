@@ -18,12 +18,21 @@ type OrderDetail struct {
 	Price         float64 `gorm:"column:price;not null;type:numeric(10,2)" json:"price"`
 }
 
+type OrderView struct {
+	OrderID     int64     `json:"order_id"`
+	CustomerID  int64     `json:"customer_id"`
+	OrderDate   time.Time `json:"order_date"`
+	OrderStatus string    `json:"order_status"`
+	TotalAmount float64   `json:"total_amount"`
+	Products    []Product `json:"products"`
+}
+
 type NewOrder struct {
 	Products []Product `json:"products"`
 }
 
 type Product struct {
-	ID       int64 `json:"order_id"`
+	ID       int64 `json:"product_id"`
 	Quantity int64 `json:"quantity"`
 }
 
