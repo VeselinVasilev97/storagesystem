@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func HandlerGetAllSuppliers(conf configuration.Config) gin.HandlerFunc {
+func HandlerGetAllSuppliers(conf *configuration.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		suppliers, err := RepoGetAllSuppliers(conf.Db)
 		if err != nil {
@@ -19,7 +19,7 @@ func HandlerGetAllSuppliers(conf configuration.Config) gin.HandlerFunc {
 	}
 }
 
-func HandlerGetSupplierById(conf configuration.Config) gin.HandlerFunc {
+func HandlerGetSupplierById(conf *configuration.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		supplierIdStr := c.Query("id")
 		if supplierIdStr == "" {
