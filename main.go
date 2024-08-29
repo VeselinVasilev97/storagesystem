@@ -19,7 +19,7 @@ func main() {
 	r.Use(middleware.LoggingMiddleware)
 
 	r.GET("/version", func(c *gin.Context) {
-		c.String(http.StatusOK, "This is the version 1.5.69 - PIPEline successfuly set.")
+		c.String(http.StatusOK, "This is the version 1.5.69 - NEW: (endpoint:/api/order GET)")
 	})
 
 	apiGroup := r.Group("/api")
