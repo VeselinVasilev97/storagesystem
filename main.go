@@ -9,6 +9,7 @@ import (
 	"storage/services/orders"
 	"storage/services/products"
 	"storage/services/suppliers"
+	"storage/services/users"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +21,7 @@ func main() {
 	r.Use(middleware.LoggingMiddleware)
 
 	r.GET("/version", func(c *gin.Context) {
-		c.String(http.StatusOK, "This is the version 1.5.7 - NEW: (endpoint:/api/order GET)")
+		c.String(http.StatusOK, "This is the version 1.5.8 - updates: New endpoints for users and suppliers")
 	})
 
 	apiGroup := r.Group("/api")
@@ -41,6 +42,9 @@ func main() {
 	apiGroup.POST("/order", orders.HandlerCreateOrder(c))
 	apiGroup.GET("/get-order", orders.HandlerGetOrderById(c))
 	apiGroup.GET("/orders", orders.HandlerGetAllOrders(c))
+
+	// Users
+	apiGroup.GET("/users", users.HandlerGetAllUsers(c))
 
 	if err := r.Run(":" + c.Port); err != nil {
 		log.Fatalf("failed to start server: %v", err)
