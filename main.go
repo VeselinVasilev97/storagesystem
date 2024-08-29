@@ -29,6 +29,7 @@ func main() {
 	apiGroup.GET("/get-categories", categories.HandlerGetAllCategories(c))
 	apiGroup.POST("/order", orders.HandlerCreateOrder(c))
 	apiGroup.GET("/get-order", orders.HandlerGetOrderById(c))
+	apiGroup.GET("/orders", orders.HandlerGetAllOrders(c))
 
 	if err := r.Run(":" + c.Port); err != nil {
 		log.Fatalf("failed to start server: %v", err)

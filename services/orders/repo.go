@@ -2,9 +2,10 @@ package orders
 
 import (
 	"fmt"
-	"gorm.io/gorm"
 	"storage/services/products"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 func RepoCreateNewOrder(db *gorm.DB, newOrder NewOrder) (int64, error) {
@@ -99,57 +100,10 @@ func RepoGetOrderById(db *gorm.DB, orderID int64) (OrderView, error) {
 	return orderView, nil
 }
 
-//func RepoCreateNewOrder(db *gorm.DB, newOrder NewOrder) (int64, error) {
-//
-//	order := Order{
-//		CustomerID:  1,
-//		OrderDate:   time.Now(),
-//		OrderStatus: "Pending",
-//		TotalAmount: 0,
-//	}
-//
-//	if err := db.Create(&order).Error; err != nil {
-//		return 0, err
-//	}
-//
-//	var totalAmount float64
-//
-//	for _, product := range newOrder.Products {
-//		var dbProduct products.Product
-//		if err := db.First(&dbProduct, product.ID).Error; err != nil {
-//			return 0, errors.New(fmt.Sprint("product not found: ", product.ID))
-//		}
-//
-//		orderDetail := OrderDetail{
-//			OrderID:   order.OrderID,
-//			ProductID: product.ID,
-//			Quantity:  product.Quantity,
-//			Price:     dbProduct.Price,
-//		}
-//
-//		totalAmount += dbProduct.Price * float64(product.Quantity)
-//
-//		newQuantity := dbProduct.QuantityInStock - product.Quantity
-//
-//		if newQuantity < 0 {
-//			db.Delete(&order)
-//		} else {
-//			dbProduct.QuantityInStock = newQuantity
-//		}
-//
-//		if err := db.Save(&dbProduct).Error; err != nil {
-//			return 0, err
-//		}
-//
-//		if err := db.Create(&orderDetail).Error; err != nil {
-//			return 0, err
-//		}
-//	}
-//
-//	order.TotalAmount = int64(totalAmount)
-//	if err := db.Save(&order).Error; err != nil {
-//		return 0, err
-//	}
-//
-//	return order.OrderID, nil
-//}
+func RepoGetAllOrders(db *gorm.DB) ([]Order, error) {
+	var orders []Order
+	if err := db.Find(&orders).Error; err != nil {
+		return nil, err
+	}
+	return orders, nil
+}
