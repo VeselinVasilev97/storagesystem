@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"storage/configuration"
 	"storage/middleware"
+	login "storage/services/Login"
 	"storage/services/categories"
 	"storage/services/orders"
 	"storage/services/products"
@@ -15,37 +16,50 @@ import (
 )
 
 func main() {
+	// Load configuration
 	c := configuration.LoadConfig()
 
+	// Initialize Gin router
 	r := gin.Default()
 	r.Use(middleware.LoggingMiddleware)
 
+	// Define the version endpoint
 	r.GET("/version", func(c *gin.Context) {
-		c.String(http.StatusOK, "This is the version 1.5.8 - updates: New endpoints for users and suppliers")
+		c.String(http.StatusOK, "This is version 2.0 - updates:LOGIN authentication JWT added.")
 	})
 
+	// API route group
 	apiGroup := r.Group("/api")
+	{
+		// Public routes
+		apiGroup.POST("/login", login.LoginHandler(c))
 
-	// Products
-	apiGroup.GET("/get-products", products.HandlerGetAllProducts(c))
-	apiGroup.GET("/get-product", products.HandlerGetProductById(c))
+		// Routes requiring authentication
+		protected := apiGroup.Group("/")
+		protected.Use(middleware.AuthMiddleware())
 
-	// Categories
-	apiGroup.GET("/categories", categories.HandlerGetAllCategories(c))
-	apiGroup.GET("/category", categories.HandlerGetAllCategories(c))
+		// Products routes
+		protected.GET("/get-products", products.HandlerGetAllProducts(c))
+		protected.GET("/get-product", products.HandlerGetProductById(c))
 
-	// Suppliers
-	apiGroup.GET("/suppliers", suppliers.HandlerGetAllSuppliers(c))
-	apiGroup.GET("/get-supplier", suppliers.HandlerGetSupplierById(c))
+		// Categories routes
+		protected.GET("/categories", categories.HandlerGetAllCategories(c))
+		protected.GET("/category", categories.HandlerGetCategoryById(c))
 
-	// Orders
-	apiGroup.POST("/order", orders.HandlerCreateOrder(c))
-	apiGroup.GET("/get-order", orders.HandlerGetOrderById(c))
-	apiGroup.GET("/orders", orders.HandlerGetAllOrders(c))
+		// Suppliers routes
+		protected.GET("/suppliers", suppliers.HandlerGetAllSuppliers(c))
+		protected.GET("/get-supplier", suppliers.HandlerGetSupplierById(c))
 
-	// Users
-	apiGroup.GET("/users", users.HandlerGetAllUsers(c))
+		// Orders routes
+		protected.POST("/order", orders.HandlerCreateOrder(c))
+		protected.GET("/get-order", orders.HandlerGetOrderById(c))
+		protected.GET("/orders", orders.HandlerGetAllOrders(c))
 
+		// Users route
+		protected.GET("/users", users.HandlerGetAllUsers(c))
+	}
+
+	// Start the server on the specified port
 	if err := r.Run(":" + c.Port); err != nil {
 		log.Fatalf("failed to start server: %v", err)
 	}

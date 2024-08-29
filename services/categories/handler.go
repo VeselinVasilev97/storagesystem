@@ -19,7 +19,7 @@ func HandlerGetAllCategories(conf *configuration.Config) gin.HandlerFunc {
 	}
 }
 
-func HandlerGerCategoryById(conf *configuration.Config) gin.HandlerFunc {
+func HandlerGetCategoryById(conf *configuration.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		categoryIdStr := c.Query("id")
 		categoryId, err := strconv.ParseInt(categoryIdStr, 10, 64)
