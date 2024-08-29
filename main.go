@@ -23,10 +23,13 @@ func main() {
 	})
 
 	apiGroup := r.Group("/api")
+
+	// Products
 	apiGroup.GET("/get-products", products.HandlerGetAllProducts(c))
 	apiGroup.GET("/get-product", products.HandlerGetProductById(c))
-	// apiGroup.GET("/get-product-detailed", product.HandlerGetProductByIdDetailed(c))
 	apiGroup.GET("/get-categories", categories.HandlerGetAllCategories(c))
+
+	// Orders
 	apiGroup.POST("/order", orders.HandlerCreateOrder(c))
 	apiGroup.GET("/get-order", orders.HandlerGetOrderById(c))
 	apiGroup.GET("/orders", orders.HandlerGetAllOrders(c))
