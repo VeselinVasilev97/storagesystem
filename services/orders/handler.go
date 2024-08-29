@@ -1,10 +1,11 @@
 package orders
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"storage/configuration"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 func HandlerCreateOrder(conf *configuration.Config) gin.HandlerFunc {
@@ -23,7 +24,17 @@ func HandlerCreateOrder(conf *configuration.Config) gin.HandlerFunc {
 
 		c.JSON(http.StatusOK, gin.H{"success": true, "id": orderId})
 	}
+}
 
+func HandlerGetAllOrders(conf *configuration.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		orders, err := RepoGetAllOrders(conf.Db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve orders: " + err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, orders)
+	}
 }
 
 func HandlerGetOrderById(conf *configuration.Config) gin.HandlerFunc {
