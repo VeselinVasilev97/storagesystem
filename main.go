@@ -34,7 +34,7 @@ func main() {
 
 	// Define the version endpoint
 	r.GET("/version", func(c *gin.Context) {
-		c.String(http.StatusOK, "This is version 2.0 - updates: LOGIN authentication JWT added.")
+		c.String(http.StatusOK, "This is version 2.0 - updates: LOGIN authentication JWT added / added register CONTROLLER")
 	})
 
 	// API route group
