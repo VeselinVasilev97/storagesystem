@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func HandlerGetAllCategories(conf *configuration.Config) gin.HandlerFunc {
+func HandlerGetAllCategories(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		categories, err := RepoGetAllCategories(conf.Db)
 		if err != nil {
@@ -19,7 +19,7 @@ func HandlerGetAllCategories(conf *configuration.Config) gin.HandlerFunc {
 	}
 }
 
-func HandlerGetCategoryById(conf *configuration.Config) gin.HandlerFunc {
+func HandlerGetCategoryById(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		categoryIdStr := c.Query("id")
 		categoryId, err := strconv.ParseInt(categoryIdStr, 10, 64)

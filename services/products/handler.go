@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func HandlerGetAllProducts(conf *configuration.Config) gin.HandlerFunc {
+func HandlerGetAllProducts(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		products, err := RepoGetAllProducts(conf.Db)
 		if err != nil {
@@ -20,7 +20,7 @@ func HandlerGetAllProducts(conf *configuration.Config) gin.HandlerFunc {
 
 }
 
-func HandlerGetProductById(conf *configuration.Config) gin.HandlerFunc {
+func HandlerGetProductById(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		productIdStr := c.Query("id")
 		if productIdStr == "" {
@@ -49,7 +49,7 @@ func HandlerGetProductById(conf *configuration.Config) gin.HandlerFunc {
 	}
 }
 
-// func HandlerGetProductByIdDetailed(conf *configuration.Config) gin.HandlerFunc {
+// func HandlerGetProductByIdDetailed(conf *configuration.Dependencies) gin.HandlerFunc {
 // 	return func(c *gin.Context) {
 // 		productIdStr := c.Query("id")
 // 		if productIdStr == "" {
