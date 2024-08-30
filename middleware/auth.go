@@ -6,11 +6,23 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
 )
 
-var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
+func init() {
+	err := godotenv.Load()
+	if err != nil {
+		panic("Error loading .env file")
+	}
+
+	if len(os.Getenv("JWT_SECRET_KEY")) == 0 {
+		panic("JWT_SECRET_KEY environment variable is not set or is empty")
+	}
+}
 
 func AuthMiddleware() gin.HandlerFunc {
+	jwtKey := []byte(os.Getenv("JWT_SECRET_KEY"))
+
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
 		if tokenString == "" {
@@ -19,27 +31,18 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Remove the "Bearer " prefix if present
 		if len(tokenString) > 7 && tokenString[:7] == "Bearer " {
 			tokenString = tokenString[7:]
 		}
 
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			// Check if the signing method is HMAC
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, jwt.ErrSignatureInvalid
 			}
 			return jwtKey, nil
 		})
 
-		if err != nil {
-			// Use the error message from the JWT parsing
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
-			c.Abort()
-			return
-		}
-
-		if !token.Valid {
+		if err != nil || !token.Valid {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 			c.Abort()
 			return
@@ -52,7 +55,6 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Set user information from claims
 		c.Set("username", claims["username"])
 		c.Set("user_id", claims["user_id"])
 
