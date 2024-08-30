@@ -4,10 +4,13 @@ import (
 	"net/http"
 	"os"
 	"storage/configuration"
+	"storage/services/users" // Import the users package
+
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Secret key used to sign the JWT
@@ -30,19 +33,22 @@ func LoginHandler(conf *configuration.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var user User
 
-		// Bind JSON to the user struct and check for errors
 		if err := c.ShouldBindJSON(&user); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 			return
 		}
 
-		// Dummy authentication check
-		if user.Username != "admin" || user.Password != "password" {
+		var dbUser users.User // Use the User model from the users package
+		if err := conf.Db.Where("username = ?", user.Username).First(&dbUser).Error; err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 			return
 		}
 
-		// Create and sign a new token
+		if err := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password)); err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+			return
+		}
+
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 			"username": user.Username,
 			"exp":      time.Now().Add(time.Hour * 1).Unix(),
@@ -54,7 +60,6 @@ func LoginHandler(conf *configuration.Config) gin.HandlerFunc {
 			return
 		}
 
-		// Send the token to the client
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Login successful",
 			"token":   tokenString,

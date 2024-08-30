@@ -6,6 +6,7 @@ import (
 	"storage/configuration"
 	"storage/middleware"
 	login "storage/services/Login"
+	register "storage/services/Register"
 	"storage/services/categories"
 	"storage/services/orders"
 	"storage/services/products"
@@ -13,9 +14,16 @@ import (
 	"storage/services/users"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	// Load .env file
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	// Load configuration
 	c := configuration.LoadConfig()
 
@@ -23,17 +31,19 @@ func main() {
 	r := gin.Default()
 	r.Use(middleware.LoggingMiddleware)
 	r.Use(middleware.CORSandCSP())
+
 	// Define the version endpoint
 	r.GET("/version", func(c *gin.Context) {
-		c.String(http.StatusOK, "This is version 2.0 - updates:LOGIN authentication JWT added.")
+		c.String(http.StatusOK, "This is version 2.0 - updates: LOGIN authentication JWT added / added register CONTROLLER")
 	})
 
 	// API route group
 	apiGroup := r.Group("/api")
 	{
 		// Public routes
-		apiGroup.POST("/login", login.LoginHandler(c))
-
+		apiGroup.POST("/login", login.LoginHandler(c)) // Call the function with the configuration and pass the result
+		// Register route
+		apiGroup.POST("/register", register.RegisterHandler(c))
 		// Routes requiring authentication
 		protected := apiGroup.Group("/")
 		protected.Use(middleware.AuthMiddleware())
