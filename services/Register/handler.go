@@ -13,12 +13,14 @@ import (
 type UserModel struct {
 	ID       uint   `gorm:"primaryKey"`
 	Username string `gorm:"unique"`
+	Email    string `gorm:"unique"`
 	Password string
 }
 
 // RegisterRequest represents the expected request body for registration
 type RegisterRequest struct {
 	Username string `json:"username" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
 }
 
@@ -40,9 +42,17 @@ func RegisterHandler(conf *configuration.Config) gin.HandlerFunc {
 			return
 		}
 
+		// Check if the email or username already exists
+		var existingUser users.User
+		if err := conf.Db.Where("email = ? OR username = ?", req.Email, req.Username).First(&existingUser).Error; err == nil {
+			c.JSON(http.StatusConflict, gin.H{"error": "Username or email already exists"})
+			return
+		}
+
 		// Create the user model
 		user := users.User{
 			Username: req.Username,
+			Email:    req.Email,
 			Password: string(hashedPassword),
 			IsActive: true, // Set default values as necessary
 		}
