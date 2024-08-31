@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 
@@ -10,9 +9,7 @@ import (
 )
 
 func AuthMiddleware() gin.HandlerFunc {
-	// jwtKey := []byte(os.Getenv("JWT_SECRET_KEY"))
 	jwtKey := os.Getenv("JWT_SECRET_KEY")
-	fmt.Println(jwtKey)
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
 		if tokenString == "" {

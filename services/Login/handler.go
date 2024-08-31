@@ -1,7 +1,6 @@
 package login
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"storage/configuration"
@@ -13,10 +12,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
-
-// Secret key used to sign the JWT
-// var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
-// jwtKey := os.Getenv("JWT_SECRET_KEY")
 
 // User struct to represent the expected request body
 type User struct {
@@ -35,7 +30,6 @@ func LoginHandler(conf *configuration.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var user User
 		jwtKey := os.Getenv("JWT_SECRET_KEY")
-		fmt.Println(jwtKey)
 		if err := c.ShouldBindJSON(&user); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 			return
