@@ -1,6 +1,7 @@
 package login
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"storage/configuration"
@@ -50,7 +51,7 @@ func LoginHandler(conf *configuration.Config) gin.HandlerFunc {
 			"username": user.Username,
 			"exp":      time.Now().Add(time.Hour * 1).Unix(),
 		})
-
+		fmt.Println(jwtKey)
 		tokenString, err := token.SignedString(jwtKey)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create token"})
