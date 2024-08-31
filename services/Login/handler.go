@@ -51,7 +51,11 @@ func LoginHandler(conf *configuration.Config) gin.HandlerFunc {
 			"username": user.Username,
 			"exp":      time.Now().Add(time.Hour * 1).Unix(),
 		})
+		fmt.Println("---------------------------")
+		fmt.Println("---------------------------")
 		fmt.Println(jwtKey)
+		fmt.Println("---------------------------")
+		fmt.Println("---------------------------")
 		tokenString, err := token.SignedString(jwtKey)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create token"})
