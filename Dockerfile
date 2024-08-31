@@ -32,5 +32,10 @@ COPY --from=builder /app/configuration/config.json ./configuration/config.json
 # Expose the port the application runs on
 EXPOSE 8000
 
+# Set environment variables (optional, but usually better passed at runtime)
+ENV JWT_SECRET_KEY=xYz1Kbg7pLv5mD1qQ0udFJ0EdRXlNkD7ZphcBQ8KpR8=
+# ENV DB_USER=default_user
+# ENV DB_PASSWORD=default_password
+
 # Command to run the application
 CMD ["./storagesystem"]
