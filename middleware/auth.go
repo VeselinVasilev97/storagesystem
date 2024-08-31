@@ -1,28 +1,18 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	// "github.com/joho/godotenv"
 )
 
-// func init() {
-// 	err := godotenv.Load()
-// 	if err != nil {
-// 		panic("Error loading .env file")
-// 	}
-
-// 	if len(os.Getenv("JWT_SECRET_KEY")) == 0 {
-// 		panic("JWT_SECRET_KEY environment variable is not set or is empty")
-// 	}
-// }
-
 func AuthMiddleware() gin.HandlerFunc {
-	jwtKey := []byte(os.Getenv("JWT_SECRET_KEY"))
-
+	// jwtKey := []byte(os.Getenv("JWT_SECRET_KEY"))
+	jwtKey := os.Getenv("JWT_SECRET_KEY")
+	fmt.Println(jwtKey)
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
 		if tokenString == "" {
