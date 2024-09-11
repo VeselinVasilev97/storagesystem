@@ -28,7 +28,7 @@ func main() {
 
 	// Define the version endpoint
 	r.GET("/version", func(c *gin.Context) {
-		c.String(http.StatusOK, "This is version 2.0")
+		c.String(http.StatusOK, "This is version 2.1 - new login form")
 	})
 
 	// API route group
@@ -58,6 +58,7 @@ func main() {
 		protected.POST("/order", orders.HandlerCreateOrder(c))
 		protected.GET("/get-order", orders.HandlerGetOrderById(c))
 		protected.GET("/orders", orders.HandlerGetAllOrders(c))
+		protected.GET("/orders-today", orders.HandlerGetTodayOrders(c))
 
 		// Users route
 		protected.GET("/users", users.HandlerGetAllUsers(c))
