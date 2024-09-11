@@ -36,6 +36,17 @@ func HandlerGetAllOrders(conf *configuration.Config) gin.HandlerFunc {
 		c.JSON(http.StatusOK, orders)
 	}
 }
+func HandlerGetTodayOrders(conf *configuration.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		orders, err := RepoGetTodayOrders(conf.Db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve today's orders: " + err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"orders": orders})
+	}
+}
 
 func HandlerGetOrderById(conf *configuration.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {

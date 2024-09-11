@@ -107,3 +107,12 @@ func RepoGetAllOrders(db *gorm.DB) ([]Order, error) {
 	}
 	return orders, nil
 }
+
+func RepoGetTodayOrders(db *gorm.DB) ([]Order, error) {
+	var orders []Order
+	today := time.Now().Format("02-01-2006")
+	if err := db.Where("DATE(delivery_date) = ?", today).Find(&orders).Error; err != nil {
+		return nil, err
+	}
+	return orders, nil
+}
