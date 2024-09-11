@@ -9,7 +9,7 @@ import (
 )
 
 func AuthMiddleware() gin.HandlerFunc {
-	jwtKey := os.Getenv("JWT_SECRET_KEY")
+	jwtKey := []byte(os.Getenv("JWT_SECRET_KEY"))
 	return func(c *gin.Context) {
 		// Get the token from the "Authorization" header
 		tokenString := c.GetHeader("Authorization")
