@@ -11,7 +11,7 @@ import (
 	"storage/services/products"
 	register "storage/services/register"
 	"storage/services/suppliers"
-	"storage/services/users"
+	"storage/services/user"
 )
 
 func Routes(d *configuration.Dependencies) *gin.Engine {
@@ -68,7 +68,7 @@ func Routes(d *configuration.Dependencies) *gin.Engine {
 
 		}
 		// Users route
-		protected.GET("/users", users.HandlerGetAllUsers(d))
+		protected.GET("/users", user.HandlerGetAllUsers(d))
 	}
 
 	return r

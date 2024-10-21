@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"os"
 	"storage/configuration"
-	"storage/services/users" // Import the users package
 	"strings"
 
 	"time"
@@ -36,9 +35,9 @@ func LoginHandler(conf *configuration.Dependencies) gin.HandlerFunc {
 			return
 		}
 
-		user.Username = strings.ToLower(user.Username)
+		user.Username = strings.TrimSpace(strings.ToLower(user.Username))
 
-		var dbUser users.User // Use the User model from the users package
+		var dbUser User // Use the User model from the users package
 		if err := conf.Db.Where("lower(username) = ?", user.Username).First(&dbUser).Error; err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 			return

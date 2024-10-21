@@ -3,7 +3,7 @@ package register
 import (
 	"net/http"
 	"storage/configuration"
-	"storage/services/users"
+	"storage/services/user"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -35,8 +35,8 @@ func RegisterHandler(conf *configuration.Dependencies) gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 			return
 		}
-		req.Username = strings.ToLower(req.Username)
-		req.Email = strings.ToLower(req.Email)
+		req.Username = strings.TrimSpace(strings.ToLower(req.Username))
+		req.Email = strings.TrimSpace(strings.ToLower(req.Email))
 
 		// Hash the password
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
@@ -46,14 +46,14 @@ func RegisterHandler(conf *configuration.Dependencies) gin.HandlerFunc {
 		}
 
 		// Check if the email or username already exists
-		var existingUser users.User
+		var existingUser user.User
 		if err := conf.Db.Where("lower(email) = ? OR lower(username) = ?", req.Email, req.Username).First(&existingUser).Error; err == nil {
 			c.JSON(http.StatusConflict, gin.H{"error": "Username or email already exists"})
 			return
 		}
 
 		// Create the user model
-		user := users.User{
+		user := user.User{
 			Username: req.Username,
 			Email:    req.Email,
 			Password: string(hashedPassword),

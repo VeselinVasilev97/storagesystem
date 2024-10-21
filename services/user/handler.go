@@ -1,4 +1,4 @@
-package users
+package user
 
 import (
 	"net/http"
@@ -11,7 +11,7 @@ func HandlerGetAllUsers(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		users, err := RepoGetAllUsers(conf.Db)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve suppliers: " + err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve users: " + err.Error()})
 			return
 		}
 		c.JSON(http.StatusOK, users)
