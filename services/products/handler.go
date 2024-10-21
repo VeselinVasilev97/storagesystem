@@ -22,7 +22,7 @@ func HandlerGetAllProducts(conf *configuration.Dependencies) gin.HandlerFunc {
 
 func HandlerGetProductById(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		productIdStr := c.Query("id")
+		productIdStr := c.Param("id")
 		if productIdStr == "" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "id query parameter is required"})
 			return
@@ -51,7 +51,7 @@ func HandlerGetProductById(conf *configuration.Dependencies) gin.HandlerFunc {
 
 // func HandlerGetProductByIdDetailed(conf *configuration.Dependencies) gin.HandlerFunc {
 // 	return func(c *gin.Context) {
-// 		productIdStr := c.Query("id")
+// 		productIdStr := c.Param("id")
 // 		if productIdStr == "" {
 // 			c.JSON(http.StatusBadRequest, gin.H{"error": "id query parameter is required"})
 // 			return

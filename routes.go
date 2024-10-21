@@ -38,33 +38,33 @@ func Routes(d *configuration.Dependencies) *gin.Engine {
 		{
 			productsGroup := protected.Group("/products")
 
-			productsGroup.GET("/get-all", products.HandlerGetAllProducts(d))
-			productsGroup.GET("/get-one", products.HandlerGetProductById(d))
+			productsGroup.GET("/", products.HandlerGetAllProducts(d))
+			productsGroup.GET("/:id", products.HandlerGetProductById(d))
 		}
 
 		// Categories routes
 		{
 			categoriesGroup := protected.Group("/categories")
 
-			categoriesGroup.GET("/get-all", categories.HandlerGetAllCategories(d))
-			categoriesGroup.GET("/get-one", categories.HandlerGetCategoryById(d))
+			categoriesGroup.GET("/", categories.HandlerGetAllCategories(d))
+			categoriesGroup.GET("/:id", categories.HandlerGetCategoryById(d))
 		}
 
 		// Suppliers routes
 		{
 			suppliersGroup := protected.Group("/suppliers")
 
-			suppliersGroup.GET("/get-all", suppliers.HandlerGetAllSuppliers(d))
-			suppliersGroup.GET("/get-one", suppliers.HandlerGetSupplierById(d))
+			suppliersGroup.GET("/", suppliers.HandlerGetAllSuppliers(d))
+			suppliersGroup.GET("/:id", suppliers.HandlerGetSupplierById(d))
 		}
 
 		// Orders routes
 		{
 			ordersGroup := protected.Group("/orders")
 
-			ordersGroup.POST("/create", orders.HandlerCreateOrder(d))
-			ordersGroup.GET("/get-one", orders.HandlerGetOrderById(d))
-			ordersGroup.GET("/get-all", orders.HandlerGetAllOrders(d))
+			ordersGroup.POST("/", orders.HandlerCreateOrder(d))
+			ordersGroup.GET("/:id", orders.HandlerGetOrderById(d))
+			ordersGroup.GET("/", orders.HandlerGetAllOrders(d))
 
 		}
 		// Users route

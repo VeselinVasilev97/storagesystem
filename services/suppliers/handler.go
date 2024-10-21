@@ -21,7 +21,7 @@ func HandlerGetAllSuppliers(conf *configuration.Dependencies) gin.HandlerFunc {
 
 func HandlerGetSupplierById(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		supplierIdStr := c.Query("id")
+		supplierIdStr := c.Param("id")
 		if supplierIdStr == "" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "id query parameter is required"})
 			return

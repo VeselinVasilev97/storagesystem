@@ -21,7 +21,7 @@ func HandlerGetAllCategories(conf *configuration.Dependencies) gin.HandlerFunc {
 
 func HandlerGetCategoryById(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		categoryIdStr := c.Query("id")
+		categoryIdStr := c.Param("id")
 		categoryId, err := strconv.ParseInt(categoryIdStr, 10, 64)
 
 		if err != nil {

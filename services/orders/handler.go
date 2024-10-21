@@ -50,7 +50,7 @@ func HandlerGetTodayOrders(conf *configuration.Dependencies) gin.HandlerFunc {
 
 func HandlerGetOrderById(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		orderIdStr := c.Query("id")
+		orderIdStr := c.Param("id")
 		if orderIdStr == "" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "id query parameter is required"})
 			return
