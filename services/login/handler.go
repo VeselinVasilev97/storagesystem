@@ -5,6 +5,7 @@ import (
 	"os"
 	"storage/configuration"
 	"storage/services/users" // Import the users package
+	"strings"
 
 	"time"
 
@@ -26,7 +27,7 @@ type Claims struct {
 }
 
 // LoginHandler handles the login requests
-func LoginHandler(conf *configuration.Config) gin.HandlerFunc {
+func LoginHandler(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var user User
 		jwtKey := os.Getenv("JWT_SECRET_KEY")
@@ -35,8 +36,10 @@ func LoginHandler(conf *configuration.Config) gin.HandlerFunc {
 			return
 		}
 
+		user.Username = strings.ToLower(user.Username)
+
 		var dbUser users.User // Use the User model from the users package
-		if err := conf.Db.Where("username = ?", user.Username).First(&dbUser).Error; err != nil {
+		if err := conf.Db.Where("lower(username) = ?", user.Username).First(&dbUser).Error; err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 			return
 		}

@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func HandlerCreateOrder(conf *configuration.Config) gin.HandlerFunc {
+func HandlerCreateOrder(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var newOrder NewOrder
 		if err := c.BindJSON(&newOrder); err != nil {
@@ -26,7 +26,7 @@ func HandlerCreateOrder(conf *configuration.Config) gin.HandlerFunc {
 	}
 }
 
-func HandlerGetAllOrders(conf *configuration.Config) gin.HandlerFunc {
+func HandlerGetAllOrders(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		orders, err := RepoGetAllOrders(conf.Db)
 		if err != nil {
@@ -36,7 +36,7 @@ func HandlerGetAllOrders(conf *configuration.Config) gin.HandlerFunc {
 		c.JSON(http.StatusOK, orders)
 	}
 }
-func HandlerGetTodayOrders(conf *configuration.Config) gin.HandlerFunc {
+func HandlerGetTodayOrders(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		orders, err := RepoGetTodayOrders(conf.Db)
 		if err != nil {
@@ -48,9 +48,9 @@ func HandlerGetTodayOrders(conf *configuration.Config) gin.HandlerFunc {
 	}
 }
 
-func HandlerGetOrderById(conf *configuration.Config) gin.HandlerFunc {
+func HandlerGetOrderById(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		orderIdStr := c.Query("id")
+		orderIdStr := c.Param("id")
 		if orderIdStr == "" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "id query parameter is required"})
 			return
