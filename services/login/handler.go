@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 	"storage/configuration"
+	"storage/services/user"
 	"strings"
 
 	"time"
@@ -28,28 +29,28 @@ type Claims struct {
 // LoginHandler handles the login requests
 func LoginHandler(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var user User
+		var inputUser User
 		jwtKey := os.Getenv("JWT_SECRET_KEY")
-		if err := c.ShouldBindJSON(&user); err != nil {
+		if err := c.ShouldBindJSON(&inputUser); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 			return
 		}
 
-		user.Username = strings.TrimSpace(strings.ToLower(user.Username))
+		inputUser.Username = strings.TrimSpace(strings.ToLower(inputUser.Username))
 
-		var dbUser User // Use the User model from the users package
-		if err := conf.Db.Where("lower(username) = ?", user.Username).First(&dbUser).Error; err != nil {
+		var dbUser user.User // Use the User model from the users package
+		if err := conf.Db.Preload("Roles").Where("lower(username) = ?", inputUser.Username).First(&dbUser).Error; err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 			return
 		}
 
-		if err := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password)); err != nil {
+		if err := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(inputUser.Password)); err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 			return
 		}
 
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"username": user.Username,
+			"username": inputUser.Username,
 			"exp":      time.Now().Add(time.Hour * 1).Unix(),
 		})
 
@@ -63,6 +64,7 @@ func LoginHandler(conf *configuration.Dependencies) gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Login successful",
 			"token":   tokenString,
+			"roles":   dbUser.Roles,
 		})
 	}
 }
