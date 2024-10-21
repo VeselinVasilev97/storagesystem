@@ -26,7 +26,7 @@ type Claims struct {
 }
 
 // LoginHandler handles the login requests
-func LoginHandler(conf *configuration.Config) gin.HandlerFunc {
+func LoginHandler(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var user User
 		jwtKey := os.Getenv("JWT_SECRET_KEY")

@@ -84,11 +84,16 @@ func RepoGetOrderById(db *gorm.DB, orderID int64) (OrderView, error) {
 	}
 
 	// Query the order details and join with the products
-	var products []Product
+	var products []products.Product
 	err := db.Table("storageuser.order_details as od").
-		Select("od.product_id as id, od.quantity").
+		Joins("inner join storageuser.products as p on p.product_id = od.product_id").
+		Select("p.*, od.quantity").
 		Where("od.order_id = ?", orderID).
 		Scan(&products).Error
+
+	if err != nil {
+		// handle error
+	}
 
 	if err != nil {
 		return OrderView{}, err

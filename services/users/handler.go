@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func HandlerGetAllUsers(conf *configuration.Config) gin.HandlerFunc {
+func HandlerGetAllUsers(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		users, err := RepoGetAllUsers(conf.Db)
 		if err != nil {
