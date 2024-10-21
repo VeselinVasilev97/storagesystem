@@ -51,7 +51,7 @@ func KeepConnectionsAlive(db *gorm.DB, interval time.Duration) {
 }
 
 func loadCfg() (*MainConfig, error) {
-	file, err := os.Open("config.json")
+	file, err := os.Open("./configuration/config.json")
 	if err != nil {
 		return nil, err
 	}

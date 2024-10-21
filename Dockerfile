@@ -27,7 +27,7 @@ WORKDIR /root/
 COPY --from=builder /app/storagesystem .
 
 # Copy the configuration file from the builder stage
-COPY --from=builder /app/configuration/config.json ./config.json
+COPY --from=builder /app/configuration/config.json ./configuration/config.json
 
 # Expose the port the application runs on
 EXPOSE 8000
