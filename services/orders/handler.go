@@ -36,7 +36,7 @@ func HandlerGetAllOrders(conf *configuration.Dependencies) gin.HandlerFunc {
 		c.JSON(http.StatusOK, orders)
 	}
 }
-func HandlerGetTodayOrders(conf *configuration.Config) gin.HandlerFunc {
+func HandlerGetTodayOrders(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		orders, err := RepoGetTodayOrders(conf.Db)
 		if err != nil {
