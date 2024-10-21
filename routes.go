@@ -32,7 +32,13 @@ func Routes(d *configuration.Dependencies) *gin.Engine {
 
 		// Routes requiring authentication
 		protected := apiGroup.Group("/")
-		protected.Use(middleware.AuthMiddleware())
+		//protected.Use(middleware.AuthMiddleware())
+
+		// Users route
+		protected.GET("/users", user.HandlerGetAllUsers(d))
+		protected.POST("/add-role", user.HandlerInsertRole(d))
+		protected.POST("/assign-role", user.HandlerAssignRole(d))
+		protected.POST("/revoke-role", user.HandlerRevokeRole(d))
 
 		// Products routes
 		{
@@ -67,8 +73,7 @@ func Routes(d *configuration.Dependencies) *gin.Engine {
 			ordersGroup.GET("/", orders.HandlerGetAllOrders(d))
 
 		}
-		// Users route
-		protected.GET("/users", user.HandlerGetAllUsers(d))
+
 	}
 
 	return r
