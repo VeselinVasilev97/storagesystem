@@ -16,8 +16,8 @@ func RepoInsertRole(db *gorm.DB, roleName string) error {
 	return nil
 }
 
-func RepoUpdateRole(db *gorm.DB, roleName string) error {
-	if err := db.Update(&Role{RoleName: roleName}).Error; err != nil {
+func RepoUpdateRole(db *gorm.DB, roleId int64, roleName string) error {
+	if err := db.Model(&Role{}).Where("id = ?", roleId).Update("role_name", roleName).Error; err != nil {
 		return err
 	}
 	return nil
