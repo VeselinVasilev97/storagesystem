@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"storage/configuration"
 	"storage/services/users"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -25,7 +26,7 @@ type RegisterRequest struct {
 }
 
 // RegisterHandler handles user registration
-func RegisterHandler(conf *configuration.Config) gin.HandlerFunc {
+func RegisterHandler(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req RegisterRequest
 
@@ -34,6 +35,8 @@ func RegisterHandler(conf *configuration.Config) gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 			return
 		}
+		req.Username = strings.ToLower(req.Username)
+		req.Email = strings.ToLower(req.Email)
 
 		// Hash the password
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
@@ -44,7 +47,7 @@ func RegisterHandler(conf *configuration.Config) gin.HandlerFunc {
 
 		// Check if the email or username already exists
 		var existingUser users.User
-		if err := conf.Db.Where("email = ? OR username = ?", req.Email, req.Username).First(&existingUser).Error; err == nil {
+		if err := conf.Db.Where("lower(email) = ? OR lower(username) = ?", req.Email, req.Username).First(&existingUser).Error; err == nil {
 			c.JSON(http.StatusConflict, gin.H{"error": "Username or email already exists"})
 			return
 		}

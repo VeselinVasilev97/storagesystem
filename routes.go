@@ -9,6 +9,7 @@ import (
 	login "storage/services/login"
 	"storage/services/orders"
 	"storage/services/products"
+	register "storage/services/register"
 	"storage/services/suppliers"
 	"storage/services/users"
 )
@@ -26,6 +27,8 @@ func Routes(d *configuration.Dependencies) *gin.Engine {
 	{
 		// Public routes
 		apiGroup.POST("/login", login.LoginHandler(d))
+		// Register route
+		apiGroup.POST("/register", register.RegisterHandler(d))
 
 		// Routes requiring authentication
 		protected := apiGroup.Group("/")
