@@ -18,6 +18,7 @@ func Routes(d *configuration.Dependencies) *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(middleware.LoggingMiddleware)
+	r.Use(middleware.CORSandCSP())
 
 	r.GET("/version", func(c *gin.Context) {
 		c.String(http.StatusOK, "This is version 2.0 - updates:LOGIN authentication JWT added.")
