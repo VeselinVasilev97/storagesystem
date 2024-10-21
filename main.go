@@ -1,71 +1,55 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
 	"storage/configuration"
-	"storage/middleware"
-	login "storage/services/Login"
-	register "storage/services/Register"
-	"storage/services/categories"
-	"storage/services/orders"
-	"storage/services/products"
-	"storage/services/suppliers"
-	"storage/services/users"
-
-	"github.com/gin-gonic/gin"
+	"syscall"
+	"time"
 )
 
 func main() {
-
-	// Load configuration
-	c := configuration.LoadConfig()
-
-	// Initialize Gin router
-	r := gin.Default()
-	r.Use(middleware.LoggingMiddleware)
-	r.Use(middleware.CORSandCSP())
-
-	// Define the version endpoint
-	r.GET("/version", func(c *gin.Context) {
-		c.String(http.StatusOK, "This is version 2.1 - new login form")
-	})
-
-	// API route group
-	apiGroup := r.Group("/api")
-	{
-		// Public routes
-		apiGroup.POST("/login", login.LoginHandler(c)) // Call the function with the configuration and pass the result
-		// Register route
-		apiGroup.POST("/register", register.RegisterHandler(c))
-		// Routes requiring authentication
-		protected := apiGroup.Group("/")
-		protected.Use(middleware.AuthMiddleware())
-
-		// Products routes
-		protected.GET("/get-products", products.HandlerGetAllProducts(c))
-		protected.GET("/get-product", products.HandlerGetProductById(c))
-
-		// Categories routes
-		protected.GET("/categories", categories.HandlerGetAllCategories(c))
-		protected.GET("/category", categories.HandlerGetCategoryById(c))
-
-		// Suppliers routes
-		protected.GET("/suppliers", suppliers.HandlerGetAllSuppliers(c))
-		protected.GET("/get-supplier", suppliers.HandlerGetSupplierById(c))
-
-		// Orders routes
-		protected.POST("/order", orders.HandlerCreateOrder(c))
-		protected.GET("/get-order", orders.HandlerGetOrderById(c))
-		protected.GET("/orders", orders.HandlerGetAllOrders(c))
-		protected.GET("/orders-today", orders.HandlerGetTodayOrders(c))
-
-		// Users route
-		protected.GET("/users", users.HandlerGetAllUsers(c))
+	d, err := configuration.Init()
+	if err != nil {
+		panic(err)
 	}
 
-	// Start the server on the specified port
-	if err := r.Run(":" + c.Port); err != nil {
-		log.Fatalf("failed to start server: %v", err)
+	r := Routes(d)
+
+	srv := &http.Server{
+		Addr:         ":" + d.Cfg.Port,
+		Handler:      r,
+		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  240 * time.Second,
 	}
+
+	go func() {
+		var err error
+		err = srv.ListenAndServe()
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Fatalf("Server failed to start: %v", err)
+		}
+	}()
+
+	go configuration.KeepConnectionsAlive(d.Db, time.Minute*5)
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	log.Println("Shutting down server...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Printf("Server forced to shutdown: %v", err)
+	}
+
+	log.Println("Server exited properly")
+
 }

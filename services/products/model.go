@@ -11,6 +11,7 @@ type Product struct {
 	QuantityInStock    int64               `gorm:"column:quantity_in_stock;not null" json:"quantity_in_stock"`
 	Price              float64             `gorm:"column:price;type:numeric(10,2);not null" json:"price"`
 	Category           categories.Category `gorm:"foreignKey:CategoryID" json:"category,omitempty"`
+	OrderedQuantity    int64               `gorm:"column:quantity" json:"quantity,omitempty"` // quantity from order_details
 	// Supplier           Supplier `gorm:"foreignKey:SupplierID" json:"supplier,omitempty"`
 }
 

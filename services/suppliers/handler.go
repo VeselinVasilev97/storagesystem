@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func HandlerGetAllSuppliers(conf *configuration.Config) gin.HandlerFunc {
+func HandlerGetAllSuppliers(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		suppliers, err := RepoGetAllSuppliers(conf.Db)
 		if err != nil {
@@ -19,9 +19,9 @@ func HandlerGetAllSuppliers(conf *configuration.Config) gin.HandlerFunc {
 	}
 }
 
-func HandlerGetSupplierById(conf *configuration.Config) gin.HandlerFunc {
+func HandlerGetSupplierById(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		supplierIdStr := c.Query("id")
+		supplierIdStr := c.Param("id")
 		if supplierIdStr == "" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "id query parameter is required"})
 			return
