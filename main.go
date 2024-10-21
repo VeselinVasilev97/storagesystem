@@ -64,7 +64,6 @@ func main() {
 		protected.GET("/users", users.HandlerGetAllUsers(c))
 	}
 
-	// Start the server on the specified port
 	if err := r.Run(":" + c.Port); err != nil {
 		log.Fatalf("failed to start server: %v", err)
 	}
