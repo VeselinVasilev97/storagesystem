@@ -37,6 +37,7 @@ func Routes(d *configuration.Dependencies) *gin.Engine {
 		// Users route
 		protected.GET("/users", user.HandlerGetAllUsers(d))
 		protected.POST("/add-role", user.HandlerInsertRole(d))
+		protected.POST("/update-role", user.HandlerUpdateRole(d))
 		protected.POST("/assign-role", user.HandlerAssignRole(d))
 		protected.POST("/revoke-role", user.HandlerRevokeRole(d))
 

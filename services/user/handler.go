@@ -38,6 +38,27 @@ func HandlerInsertRole(conf *configuration.Dependencies) gin.HandlerFunc {
 	}
 }
 
+func HandlerUpdateRole(conf *configuration.Dependencies) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		type Role struct {
+			RoleId   int64  `json:"role_id"`
+			RoleName string `json:"role_name"`
+		}
+		var role Role
+		if err := c.BindJSON(&role); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+			return
+		}
+
+		err := RepoUpdateRole(conf.Db, role.RoleId, role.RoleName)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update role: " + err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Successfully updated role"})
+	}
+}
+
 func HandlerAssignRole(conf *configuration.Dependencies) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		type UserRole struct {
