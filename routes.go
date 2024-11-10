@@ -46,7 +46,7 @@ func Routes(d *configuration.Dependencies) *gin.Engine {
 		{
 			productsGroup := protected.Group("/products")
 
-			productsGroup.GET("/", products.HandlerGetAllProducts(d))
+			productsGroup.GET("", products.HandlerGetAllProducts(d))
 			productsGroup.GET("/:id", products.HandlerGetProductById(d))
 		}
 
@@ -54,7 +54,7 @@ func Routes(d *configuration.Dependencies) *gin.Engine {
 		{
 			categoriesGroup := protected.Group("/categories")
 
-			categoriesGroup.GET("/", categories.HandlerGetAllCategories(d))
+			categoriesGroup.GET("", categories.HandlerGetAllCategories(d))
 			categoriesGroup.GET("/:id", categories.HandlerGetCategoryById(d))
 		}
 
@@ -62,7 +62,7 @@ func Routes(d *configuration.Dependencies) *gin.Engine {
 		{
 			suppliersGroup := protected.Group("/suppliers")
 
-			suppliersGroup.GET("/", suppliers.HandlerGetAllSuppliers(d))
+			suppliersGroup.GET("", suppliers.HandlerGetAllSuppliers(d))
 			suppliersGroup.GET("/:id", suppliers.HandlerGetSupplierById(d))
 		}
 
@@ -70,9 +70,9 @@ func Routes(d *configuration.Dependencies) *gin.Engine {
 		{
 			ordersGroup := protected.Group("/orders")
 
-			ordersGroup.POST("/", orders.HandlerCreateOrder(d))
+			ordersGroup.POST("", orders.HandlerCreateOrder(d))
 			ordersGroup.GET("/:id", orders.HandlerGetOrderById(d))
-			ordersGroup.GET("/", orders.HandlerGetAllOrders(d))
+			ordersGroup.GET("", orders.HandlerGetAllOrders(d))
 
 		}
 
