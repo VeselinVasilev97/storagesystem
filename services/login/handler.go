@@ -62,9 +62,9 @@ func LoginHandler(conf *configuration.Dependencies) gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"message": "Login successful",
-			"token":   tokenString,
-			"roles":   dbUser.Roles,
+			"username": inputUser.Username,
+			"token":    tokenString,
+			"roles":    dbUser.Roles,
 		})
 	}
 }
